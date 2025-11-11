@@ -7,28 +7,36 @@ const alphabetGrid = document.getElementById('alphabet-grid');
 const inputRule = document.getElementById('input-rule');
 const btnStartRound = document.getElementById('btn-start-round');
 
+// 1. OBTENEMOS EL NUEVO BOTÓN
+const btnResetGame = document.getElementById('btn-reset-game');
+
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 // --- Eventos (Enviar al Servidor) ---
 
-// 1. El Host empieza la ronda
+// El Host empieza la ronda
 btnStartRound.addEventListener('click', () => {
   const rule = inputRule.value;
   if (rule) {
-    // Le avisamos al servidor que inicie la ronda con esta regla
     socket.emit('round:start', rule);
   }
 });
 
-// 2. Función para cuando se presiona una letra
+// 2. AÑADIMOS EL EVENTO DEL NUEVO BOTÓN
+btnResetGame.addEventListener('click', () => {
+  // Avisamos al servidor que reinicie todo
+  socket.emit('round:reset');
+  inputRule.value = ""; // Limpiamos el campo de regla
+});
+
+// Función para cuando se presiona una letra
 function onLetterClick(letter) {
-  // Le avisamos al servidor que esta letra se usó
   socket.emit('letter:use', letter);
 }
 
 // --- Eventos (Recibir del Servidor) ---
 
-// 3. El servidor nos envía el estado actualizado del juego
+// El servidor nos envía el estado actualizado del juego
 socket.on('game:updateState', (gameState) => {
   console.log("Estado actualizado recibido:", gameState);
 
@@ -43,8 +51,11 @@ socket.on('game:updateState', (gameState) => {
     btn.innerText = letter;
     btn.classList.add('letter-btn');
     
-    // Si la letra está en la lista de "usadas", la deshabilitamos
-    if (gameState.usedLetters.includes(letter)) {
+    // 3. ¡LA LÓGICA CLAVE!
+    // Deshabilitamos el botón si:
+    //   A) El juego NO está corriendo (NUEVA REGLA)
+    //   B) La letra ya fue usada (REGLA ANTIGUA)
+    if (!gameState.isRunning || gameState.usedLetters.includes(letter)) {
       btn.disabled = true;
     }
     
