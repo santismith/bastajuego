@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basta! (Tablero)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Basta! - Tablero Compartido</h1>
+  
+  <div id="host-controls">
+    <h3>Controles del Host</h3>
+    <label for="input-rule">Regla de la Ronda:</label>
+    <input type="text" id="input-rule" placeholder="Ej: Contiene la letra 'L'">
+    <button id="btn-start-round">Empezar Ronda / Reiniciar</button>
+  </div>
+
+  <hr>
+
+  <h2>Regla Actual: <span id="current-rule">...</span></h2>
+
+  <div id="alphabet-grid">
+    </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
